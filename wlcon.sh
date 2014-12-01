@@ -103,6 +103,13 @@ done
 }
 
 ## MAIN program ##
+#Check if run as root
+if [ "$(id -u)" != "0" ];
+  then
+    echo "This script must be run as root"
+    exit 1
+fi
+
 #Function scan and save the results
 scan > /tmp/scan.txt&
 
