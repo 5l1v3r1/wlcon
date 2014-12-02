@@ -221,13 +221,15 @@ echo -e ""$colorbase""
 wpa_passphrase $NETWORK $PASS > /etc/wpa_supplicant/$NETWORK.conf
 
 #The connection
+iw dev $IFACE_WLAN disconnect > /dev/null 2>&1
 killall wpa_supplicant > /dev/null 2>&1
 killall NetworkManager > /dev/null 2>&1
+
 wpa_supplicant -B -i $IFACE_WLAN -c /etc/wpa_supplicant/$NETWORK.conf -D nl80211
 echo -e ""$blanco"Trying to connect . . ."$colorbase""
 sleep 2
 timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1
-ping -c 1 www.google.com > /dev/null 2>&1
+ping -I $IFACE_WLAN -c 1 www.google.com > /dev/null 2>&1
 if [ "$?" == "0" ]
   then
     echo -e ""$verdeC"Connection succesful :)"$colorbase"\n"
