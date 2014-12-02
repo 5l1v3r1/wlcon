@@ -40,9 +40,9 @@ while [ "$INT" -lt "1" -o "$INT" -gt "$IFACES_NUM" ]
   do
     echo -ne "\n\n"$resaltar""$blanco"Select interface:"$colorbase" "
     read INT
-    if  [ "$INT" -lt "1" -o "$INT" -gt "$IFACES_NUM" ]
+    if [ -z $INT ] || [ "$INT" -lt "1" ] || [ "$INT" -gt "$IFACES_NUM" ]
       then
-        echo -e ""$rojo" - ERROR - "$colorbase""
+        echo -e ""$rojo" - ERROR - CTRL+C to EXIT"$colorbase""
         sleep .7
         check_ifaces
     fi
@@ -165,7 +165,7 @@ MAX_NUM=$(cat /tmp/scan.txt | wc -l)
 clear
 
 OPT=0
-while [ "$OPT" -lt "1" -o "$OPT" -gt "$MAX_NUM" ]
+while [ -z $OPT ] || [ "$OPT" -lt "1" ] || [ "$OPT" -gt "$MAX_NUM" ]
   do
     clear
     echo -e "\n"$azulC"████████████████████████████████████████████████████████"$colorbase""
@@ -174,9 +174,9 @@ while [ "$OPT" -lt "1" -o "$OPT" -gt "$MAX_NUM" ]
     echo -e "\n"$blanco"0)\t"$azulC"▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀\t"$blanco"RESCAN"$colorbase""
     echo -ne "\n\n"$resaltar""$blanco"Network to connect:"$colorbase" "
     read OPT
-    if  [ "$OPT" -lt "0" -o "$OPT" -gt "$MAX_NUM" ]
+    if [ -z $OPT ] || [ "$OPT" -lt "0" ] || [ "$OPT" -gt "$MAX_NUM" ]
       then
-        echo -e ""$rojo" - ERROR - "$colorbase""
+        echo -e ""$rojo" - ERROR - CTRL+C to EXIT"$colorbase""
         sleep .7
       elif [ "$OPT" == "0" ]
         then
