@@ -10,6 +10,8 @@ azulC="\033[1;34m"
 resaltar="\E[7m"
 colorbase="\E[0m"
 
+IFACE=wlan2
+
 function draw() {
 local COB=$1
 COB=$(echo "$1" | cut -c 2-3 )
@@ -87,7 +89,7 @@ done
 function scan() {
 cnt=0
 num=1
-for i in $(iw dev wlan0 scan | grep -E 'SSID|signal:' | sed -e 's/signal: //' -e 's/SSID: //' -e 's/dBm//')
+for i in $(iw dev $IFACE scan | grep -E 'SSID|signal:' | sed -e 's/signal: //' -e 's/SSID: //' -e 's/dBm//')
   do
     let mod=$cnt%2
     if [ "$mod" == "0" ]
@@ -110,6 +112,7 @@ if [ "$(id -u)" != "0" ];
     exit 1
 fi
 
+function start() {
 #Function scan and save the results
 scan > /tmp/scan.txt&
 
@@ -128,14 +131,21 @@ while [ "$OPT" -lt "1" -o "$OPT" -gt "$MAX_NUM" ]
     echo -e "\n"$azulC"████████████████████████████████████████████████████████"$colorbase""
     echo -e ""$azulC"██████████ SELECT NETWORK ██████████████████████████████"$colorbase"\n"
     cat /tmp/scan.txt
+    echo -e "\n"$blanco"0)\t"$azulC"▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀\t"$blanco"RESCAN"$colorbase""
     echo -ne "\n\n"$resaltar""$blanco"Network to connect:"$colorbase" "
     read OPT
-    if  [ "$OPT" -lt "1" -o "$OPT" -gt "$MAX_NUM" ]
+    if  [ "$OPT" -lt "0" -o "$OPT" -gt "$MAX_NUM" ]
       then
         echo -e ""$rojo" - ERROR - "$colorbase""
         sleep .7
+      elif [ "$OPT" == "0" ]
+        then
+          start
     fi
 done
+}
+
+start
 
 #Select network from saved report
 NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ print $3 }')
@@ -162,10 +172,10 @@ wpa_passphrase $NETWORK $PASS > /etc/wpa_supplicant/$NETWORK.conf
 #The connection
 killall wpa_supplicant > /dev/null 2>&1
 killall NetworkManager > /dev/null 2>&1
-wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/$NETWORK.conf -D nl80211
+wpa_supplicant -B -i $IFACE -c /etc/wpa_supplicant/$NETWORK.conf -D nl80211
 echo -e ""$blanco"Trying to connect . . ."$colorbase""
 sleep 2
-timeout 15 dhclient wlan0 > /dev/null 2>&1
+timeout 15 dhclient $IFACE > /dev/null 2>&1
 ping -c 1 www.google.com > /dev/null 2>&1
 if [ "$?" == "0" ]
   then
