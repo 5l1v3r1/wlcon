@@ -40,6 +40,12 @@ while [ "$INT" -lt "1" -o "$INT" -gt "$IFACES_NUM" ]
   do
     echo -ne "\n\n"$resaltar""$blanco"Select interface:"$colorbase" "
     read INT
+    if  [ "$INT" -lt "1" -o "$INT" -gt "$IFACES_NUM" ]
+      then
+        echo -e ""$rojo" - ERROR - "$colorbase""
+        sleep .7
+        check_ifaces
+    fi
 done
 
 IFACE_WLAN=$(iw dev | awk '/Interface/ { print $2 }' | sort | head -n $INT | tail -n 1)
@@ -146,14 +152,6 @@ for i in $(iw dev $IFACE_WLAN scan | grep -E 'SSID|signal:' | sed -e 's/signal: 
 done
 }
 
-## MAIN program ##
-#Check if run as root
-if [ "$(id -u)" != "0" ];
-  then
-    echo "This script must be run as root"
-    exit 1
-fi
-
 function start() {
 #Function scan and save the results
 scan > /tmp/scan.txt&
@@ -186,6 +184,15 @@ while [ "$OPT" -lt "1" -o "$OPT" -gt "$MAX_NUM" ]
     fi
 done
 }
+
+## MAIN program ##
+#Check if run as root
+if [ "$(id -u)" != "0" ];
+  then
+    echo "This script must be run as root"
+    exit 1
+fi
+
 
 check_ifaces
 
