@@ -52,35 +52,43 @@ function discover() {
 while [ "$(pidof iw)" != "" ]
   do
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀"$colorbase""
     sleep .2
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀▝▀▝▀"$colorbase""
     sleep .2
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀▝▀▝▀"$amarillo"▝▀▝▀"$colorbase""
     sleep .2
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀▝▀▝▀"$amarillo"▝▀▝▀"$verde"▝▀▝▀"$colorbase""
     sleep .2
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀▝▀▝▀"$amarillo"▝▀▝▀"$verde"▝▀▝▀▝▀▝▀"$colorbase""
     sleep .2
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀▝▀▝▀"$amarillo"▝▀▝▀"$verde"▝▀▝▀"$colorbase""
     sleep .2
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀▝▀▝▀"$amarillo"▝▀▝▀"$colorbase""
     sleep .2
     clear
-    echo -e "\n"$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
+    echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+    echo -e ""$azulC"████ SCANNING WIFI NETWORKS █████████████████████"$colorbase"\n"
     echo -ne ""$rojo"▝▀▝▀▝▀▝▀"$colorbase""
     sleep .2
 done
