@@ -10,7 +10,41 @@ azulC="\033[1;34m"
 resaltar="\E[7m"
 colorbase="\E[0m"
 
-IFACE=wlan2
+#IFACE=wlan2
+
+function check_ifaces() {
+CONT=1
+IFACES=$(iw dev | awk '/Interface/ { print $2 }' | sort)
+IFACES_NUM=$(echo "$IFACES" | wc -l)
+
+#Check available Wifi interfaces
+if [ "$IFACES" == "" ]
+  then
+    echo -e ""$rojo"No available WIFI interfaces !!"$colorbase""
+    exit 1
+fi
+
+clear
+echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
+echo -e ""$azulC"████ SELECT INTERFACE ███████████████████████████"$colorbase"\n"
+
+#Show Interfaces
+for i in $IFACES
+  do
+    echo -e ""$blanco"$CONT) "$colorbase"$i"
+    let CONT+=1
+done
+
+INT="0"
+while [ "$INT" -lt "1" -o "$INT" -gt "$IFACES_NUM" ]
+  do
+    echo -ne "\n\n"$resaltar""$blanco"Select interface:"$colorbase" "
+    read INT
+done
+
+IFACE_WLAN=$(iw dev | awk '/Interface/ { print $2 }' | sort | head -n $INT | tail -n 1)
+ifconfig $IFACE_WLAN up > /dev/null 2>&1
+}
 
 function draw() {
 local COB=$1
@@ -97,7 +131,7 @@ done
 function scan() {
 cnt=0
 num=1
-for i in $(iw dev $IFACE scan | grep -E 'SSID|signal:' | sed -e 's/signal: //' -e 's/SSID: //' -e 's/dBm//')
+for i in $(iw dev $IFACE_WLAN scan | grep -E 'SSID|signal:' | sed -e 's/signal: //' -e 's/SSID: //' -e 's/dBm//')
   do
     let mod=$cnt%2
     if [ "$mod" == "0" ]
@@ -153,6 +187,8 @@ while [ "$OPT" -lt "1" -o "$OPT" -gt "$MAX_NUM" ]
 done
 }
 
+check_ifaces
+
 start
 
 #Select network from saved report
@@ -180,10 +216,10 @@ wpa_passphrase $NETWORK $PASS > /etc/wpa_supplicant/$NETWORK.conf
 #The connection
 killall wpa_supplicant > /dev/null 2>&1
 killall NetworkManager > /dev/null 2>&1
-wpa_supplicant -B -i $IFACE -c /etc/wpa_supplicant/$NETWORK.conf -D nl80211
+wpa_supplicant -B -i $IFACE_WLAN -c /etc/wpa_supplicant/$NETWORK.conf -D nl80211
 echo -e ""$blanco"Trying to connect . . ."$colorbase""
 sleep 2
-timeout 15 dhclient $IFACE > /dev/null 2>&1
+timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1
 ping -c 1 www.google.com > /dev/null 2>&1
 if [ "$?" == "0" ]
   then
