@@ -141,12 +141,23 @@ done
 NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ print $3 }')
 echo -e ""$blanco"The net selected is: "$verdeC"$NETWORK"$colorbase""
 echo -ne ""$blanco"Password: "$colorbase""
+
+#Input password hiden
+ASTERISK=""
 echo -ne ""$rojo""
-  read PWD
+while IFS= read -p "$ASTERISK" -r -s -n 1 char
+do
+    if [[ $char == $'\0' ]]
+    then
+        break
+    fi
+    ASTERISK='*'
+    PASS+="$char"
+done
 echo -e ""$colorbase""
 
 #Create wpa_supplicant config file
-wpa_passphrase $NETWORK $PWD > /etc/wpa_supplicant/$NETWORK.conf
+wpa_passphrase $NETWORK $PASS > /etc/wpa_supplicant/$NETWORK.conf
 
 #The connection
 killall wpa_supplicant > /dev/null 2>&1
