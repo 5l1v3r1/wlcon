@@ -11,4 +11,8 @@ TUI (Text User Interface) to conect to WPA wifi networks
 *** Alpha testing ***
 *********************
 
-USE AT YOUR OWN RISK!
+* See the issues page for known bugs
+
+*********************
+@mark__os
+*********************
