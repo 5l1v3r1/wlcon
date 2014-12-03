@@ -137,6 +137,8 @@ done
 function scan() {
 cnt=0
 num=1
+OLD_IFS=$IFS
+IFS=$'\t'
 for i in $(iw dev $IFACE_WLAN scan | grep -E 'SSID|signal:' | sed -e 's/signal: //' -e 's/SSID: //' -e 's/dBm//')
   do
     let mod=$cnt%2
@@ -150,17 +152,23 @@ for i in $(iw dev $IFACE_WLAN scan | grep -E 'SSID|signal:' | sed -e 's/signal: 
     fi
     let cnt=$cnt+1
 done
+IFS=$OLD_IFS
 }
 
 function start() {
 #Function scan and save the results
-scan > /tmp/scan.txt&
+scan > /tmp/scan_pre.txt&
 
 sleep .2
 #Function discover that shows the scan animation
 discover
 
 sleep .3
+
+#Remove empty lines
+sed '/^$/d' /tmp/scan_pre.txt > /tmp/scan.txt
+rm -r /tmp/scan_pre.txt
+
 MAX_NUM=$(cat /tmp/scan.txt | wc -l)
 clear
 
@@ -199,7 +207,8 @@ check_ifaces
 start
 
 #Select network from saved report
-NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ print $3 }')
+NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ $1=$2=""; print $0 }')
+NETWORK=$(echo "$NETWORK" | sed -e 's/^[ \t]*//')
 echo -e ""$blanco"The net selected is: "$verdeC"$NETWORK"$colorbase""
 echo -ne ""$blanco"Password: "$colorbase""
 
@@ -218,14 +227,14 @@ done
 echo -e ""$colorbase""
 
 #Create wpa_supplicant config file
-wpa_passphrase $NETWORK $PASS > /etc/wpa_supplicant/$NETWORK.conf
+wpa_passphrase "$NETWORK" "$PASS" > "/etc/wpa_supplicant/$NETWORK.conf"
 
 #The connection
 iw dev $IFACE_WLAN disconnect > /dev/null 2>&1
 killall wpa_supplicant > /dev/null 2>&1
 killall NetworkManager > /dev/null 2>&1
 
-wpa_supplicant -B -i $IFACE_WLAN -c /etc/wpa_supplicant/$NETWORK.conf -D nl80211
+wpa_supplicant -B -i $IFACE_WLAN -c "/etc/wpa_supplicant/$NETWORK.conf" -D nl80211
 echo -e ""$blanco"+ Trying to connect . . ."$colorbase""
 sleep 2
 timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1
