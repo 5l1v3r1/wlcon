@@ -226,15 +226,15 @@ killall wpa_supplicant > /dev/null 2>&1
 killall NetworkManager > /dev/null 2>&1
 
 wpa_supplicant -B -i $IFACE_WLAN -c /etc/wpa_supplicant/$NETWORK.conf -D nl80211
-echo -e ""$blanco"Trying to connect . . ."$colorbase""
+echo -e ""$blanco"+ Trying to connect . . ."$colorbase""
 sleep 2
 timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1
 ping -I $IFACE_WLAN -c 1 www.google.com > /dev/null 2>&1
 if [ "$?" == "0" ]
   then
-    echo -e ""$verdeC"Connection succesful :)"$colorbase"\n"
+    echo -e ""$verdeC"+ Connection succesful :)"$colorbase"\n"
   else
-    echo -e ""$rojo"ERROR, no internet connection :( "$colorbase"\n"
+    echo -e ""$rojo"- ERROR, no internet connection :( "$colorbase"\n"
     echo -e ""$amarillo" POSIBLE REASONS: "$colorbase""
     echo -e ""$amarillo"   - Your wifi password its wrong"$colorbase""
     echo -e ""$amarillo"   - You have to configure manual IP's"$colorbase"\n"
