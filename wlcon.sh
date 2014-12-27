@@ -1,10 +1,12 @@
 #!/bin/bash
 #colores
-rojo="\033[1;31m"
+rojo="\033[0;31m"
+rojoC="\033[1;31m"
 verde="\033[0;32m"
 verdeC="\033[1;32m"
 amarillo="\033[1;33m"
 gris="\033[1;30m"
+marron="\033[0;33m"
 blanco="\033[1;37m"
 azulC="\033[1;34m"
 resaltar="\E[7m"
@@ -25,8 +27,8 @@ if [ "$IFACES" == "" ]
 fi
 
 clear
-echo -e "\n"$azulC"█████████████████████████████████████████████████"$colorbase""
-echo -e ""$azulC"████ SELECT INTERFACE ███████████████████████████"$colorbase"\n"
+echo -e "\n"$azulC"████████████████████████████████████████████████████████"$colorbase""
+echo -e ""$azulC"████ SELECT INTERFACE ██████████████████████████████████"$colorbase"\n"
 
 #Show Interfaces
 for i in $IFACES
@@ -34,10 +36,10 @@ for i in $IFACES
     local MODE=$(iwgetid -s -m $i)
     if [ "$MODE" != "Managed" ]
       then
-        echo -e ""$blanco"$CONT) "$colorbase""$rojo"$i \t- Interface doesn't support scanning "$resaltar"$MODE"$colorbase""
+        echo -e ""$blanco"$CONT) "$colorbase""$rojoC"$i \t- "$rojo"Interface doesn't support scanning "$resaltar" Mode: $MODE "$colorbase""
         let CONT+=1
     else
-      echo -e ""$blanco"$CONT) "$colorbase"$i"
+      echo -e ""$blanco"$CONT) "$colorbase""$verdeC"$i"$colorbase""
       let CONT+=1
     fi
 done
