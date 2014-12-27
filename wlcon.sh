@@ -31,8 +31,15 @@ echo -e ""$azulC"████ SELECT INTERFACE ███████████
 #Show Interfaces
 for i in $IFACES
   do
-    echo -e ""$blanco"$CONT) "$colorbase"$i"
-    let CONT+=1
+    local MODE=$(iwgetid -s -m $i)
+    if [ "$MODE" != "Managed" ]
+      then
+        echo -e ""$blanco"$CONT) "$colorbase""$rojo"$i \t- Interface doesn't support scanning "$resaltar"$MODE"$colorbase""
+        let CONT+=1
+    else
+      echo -e ""$blanco"$CONT) "$colorbase"$i"
+      let CONT+=1
+    fi
 done
 
 INT="0"
