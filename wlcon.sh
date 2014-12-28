@@ -12,8 +12,6 @@ azulC="\033[1;34m"
 resaltar="\E[7m"
 colorbase="\E[0m"
 
-#IFACE=wlan2
-
 function check_ifaces() {
 CONT=1
 IFACES=$(iw dev | awk '/Interface/ { print $2 }' | sort)
@@ -165,15 +163,6 @@ IFS=$OLD_IFS
 }
 
 function start() {
-#Function scan and save the results
-scan > /tmp/scan_pre.txt&
-
-sleep .2
-#Function discover that shows the scan animation
-discover
-
-sleep .3
-
 #Remove empty lines
 sed '/^$/d' /tmp/scan_pre.txt > /tmp/scan.txt
 rm -r /tmp/scan_pre.txt
@@ -200,20 +189,6 @@ while [ -z $OPT ] || [ "$OPT" -lt "1" ] || [ "$OPT" -gt "$MAX_NUM" ]
           start
     fi
 done
-}
-
-## MAIN program ##
-#Check if run as root
-if [ "$(id -u)" != "0" ];
-  then
-    echo "This script must be run as root"
-    exit 1
-fi
-
-
-check_ifaces
-
-start
 
 #Select network from saved report
 NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ $1=$2=""; print $0 }')
@@ -234,7 +209,9 @@ do
     PASS+="$char"
 done
 echo -e ""$colorbase""
+}
 
+function wpa_connection() {
 #Create wpa_supplicant config file
 wpa_passphrase "$NETWORK" "$PASS" > "/etc/wpa_supplicant/$NETWORK.conf"
 
@@ -257,3 +234,28 @@ if [ "$?" == "0" ]
     echo -e ""$amarillo"   - Your wifi password its wrong"$colorbase""
     echo -e ""$amarillo"   - You have to configure manual IP's"$colorbase"\n"
 fi
+}
+
+##################
+## MAIN program ##
+##################
+#Check if run as root
+if [ "$(id -u)" != "0" ];
+  then
+    echo "This script must be run as root"
+    exit 1
+fi
+
+#Function to check available interfaces
+check_ifaces
+#Function scan and save the results
+scan > /tmp/scan_pre.txt&
+sleep .2
+#Function discover that shows the scan animation
+discover
+sleep .3
+#Function start proccess
+start
+#Function wpa_connection
+wpa_connection
+
