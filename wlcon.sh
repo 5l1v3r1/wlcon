@@ -17,10 +17,10 @@ case $1 in
 	--help | -h)
 			echo -e "USE: $0 <args>"
 			echo -e "\n  ARGS:"
-			echo -e "\n    -h:   \t This help"
-			echo -e "\n    -pp:  \t Password in plain text in screen [ Default ]"
-			echo -e "\n    -ph:  \t Password hidden (no echoed)"
-			echo -e "\n    -pa:  \t Password with asterisk"
+			echo -e "\n    "$blanco"-h:"$colorbase"   \t This help"
+			echo -e "\n    "$blanco"-pp:"$colorbase"  \t Password in plain text in screen [ Default ]"
+			echo -e "\n    "$blanco"-ph:"$colorbase"  \t Password hidden (no echoed)"
+			echo -e "\n    "$blanco"-pa:"$colorbase"  \t Password with asterisk\n"
 			exit 1
 			;;
 	-pp)
@@ -198,7 +198,6 @@ local OPT=""
 while [ -z $OPT ] || [ "$OPT" -lt "1" ] || [ "$OPT" -gt "$MAX_NUM" ]
   do
     clear
-    echo "OPT=$OPT"
     echo -e "\n"$azulC"████████████████████████████████████████████████████████"$colorbase""
     echo -e ""$azulC"██████████ SELECT NETWORK ██████████████████████████████"$colorbase"\n"
     cat /tmp/scan.txt
@@ -225,7 +224,6 @@ done
 #Select network from saved report
 NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ $1=$2=""; print $0 }')
 NETWORK=$(echo "$NETWORK" | sed -e 's/^[ \t]*//')
-echo "OPT=$OPT"
 echo -e ""$blanco"The net selected is: "$verdeC"$NETWORK"$colorbase""
 echo -ne ""$blanco"Password: "$colorbase""
 echo -ne ""$rojo""
@@ -248,7 +246,7 @@ if [ "$PASS_HIDDEN" == "ASTERISK" ]
      then
        read -s PASS
    else		
-    read PASS
+     read PASS
 fi
 echo -e ""$colorbase""
 
@@ -270,8 +268,9 @@ echo -e ""$blanco"+ Kill old dhclient proccess . . ."$colorbase""
 killall dhclient > /dev/null 2>&1
 sleep 2
 timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1 &
-echo -ne "+ Get DHCP request  "
+echo -ne ""$blanco"+ Get DHCP request  "$marron""
 spinner 25
+echo -e ""$colorbase""
 ping -I $IFACE_WLAN -c 1 www.google.com > /dev/null 2>&1
 if [ "$?" == "0" ]
   then
@@ -313,7 +312,7 @@ if [ "$(id -u)" != "0" ];
     exit 1
 fi
 
-#Check launch options
+#Check launch options (flags)
 check_flags $1
 #Function to check available interfaces
 check_ifaces
