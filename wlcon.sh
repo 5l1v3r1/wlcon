@@ -12,6 +12,30 @@ azulC="\033[1;34m"
 resaltar="\E[7m"
 colorbase="\E[0m"
 
+function check_flags() {
+case $1 in
+	--help | -h)
+			echo -e "USE: $0 <args>"
+			echo -e "\n  ARGS:"
+			echo -e "\n    -h:   \t This help"
+			echo -e "\n    -pp:  \t Password in plain text in screen [ Default ]"
+			echo -e "\n    -ph:  \t Password hidden (no echoed)"
+			echo -e "\n    -pa:  \t Password with asterisk"
+			exit 1
+			;;
+	-pp)
+			PASS_HIDDEN=NO
+			;;
+	-ph)
+			PASS_HIDDEN=YES
+			;;
+	-pa)
+			PASS_HIDDEN=ASTERISK
+			;;
+esac
+	
+}
+
 function check_ifaces() {
 CONT=1
 IFACES=$(iw dev | awk '/Interface/ { print $2 }' | sort)
@@ -170,10 +194,11 @@ rm -r /tmp/scan_pre.txt
 MAX_NUM=$(cat /tmp/scan.txt | wc -l)
 clear
 
-OPT=0
+local OPT=""
 while [ -z $OPT ] || [ "$OPT" -lt "1" ] || [ "$OPT" -gt "$MAX_NUM" ]
   do
     clear
+    echo "OPT=$OPT"
     echo -e "\n"$azulC"████████████████████████████████████████████████████████"$colorbase""
     echo -e ""$azulC"██████████ SELECT NETWORK ██████████████████████████████"$colorbase"\n"
     cat /tmp/scan.txt
@@ -184,8 +209,15 @@ while [ -z $OPT ] || [ "$OPT" -lt "1" ] || [ "$OPT" -gt "$MAX_NUM" ]
       then
         echo -e ""$rojo" - ERROR - CTRL+C to EXIT"$colorbase""
         sleep .7
-      elif [ "$OPT" == "0" ]
+      elif [ "$OPT" -eq "0" ]
         then
+          #Function scan and save the results
+          scan > /tmp/scan_pre.txt&
+          sleep .2
+          #Function discover that shows the scan animation
+          discover
+          sleep .3
+          #Function start proccess
           start
     fi
 done
@@ -193,22 +225,35 @@ done
 #Select network from saved report
 NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ $1=$2=""; print $0 }')
 NETWORK=$(echo "$NETWORK" | sed -e 's/^[ \t]*//')
+echo "OPT=$OPT"
 echo -e ""$blanco"The net selected is: "$verdeC"$NETWORK"$colorbase""
 echo -ne ""$blanco"Password: "$colorbase""
-
-#Input password hiden
-ASTERISK=""
 echo -ne ""$rojo""
-while IFS= read -p "$ASTERISK" -r -s -n 1 char
-do
-    if [[ $char == $'\0' ]]
-    then
-        break
-    fi
-    ASTERISK='*'
-    PASS+="$char"
-done
+
+if [ "$PASS_HIDDEN" == "ASTERISK" ]
+  then
+	   #Input password hiden
+		ASTERISK=""
+		echo -ne ""$rojo""
+		while IFS= read -p "$ASTERISK" -r -s -n 1 char
+		do
+			if [[ $char == $'\0' ]]
+			then
+				break
+			fi
+			ASTERISK='*'
+			PASS+="$char"
+		done
+   elif [ "$PASS_HIDDEN" == "YES" ]
+     then
+       read -s PASS
+   else		
+    read PASS
+fi
 echo -e ""$colorbase""
+
+#Call wpa_connection to finish the connection
+wpa_connection
 }
 
 function wpa_connection() {
@@ -221,20 +266,42 @@ killall wpa_supplicant > /dev/null 2>&1
 killall NetworkManager > /dev/null 2>&1
 
 wpa_supplicant -B -i $IFACE_WLAN -c "/etc/wpa_supplicant/$NETWORK.conf" -D nl80211
-echo -e ""$blanco"+ Trying to connect . . ."$colorbase""
+echo -e ""$blanco"+ Kill old dhclient proccess . . ."$colorbase""
+killall dhclient > /dev/null 2>&1
 sleep 2
-timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1
+timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1 &
+echo -ne "+ Get DHCP request  "
+spinner 25
 ping -I $IFACE_WLAN -c 1 www.google.com > /dev/null 2>&1
 if [ "$?" == "0" ]
   then
-    echo -e ""$verdeC"+ Connection succesful :)"$colorbase"\n"
+    echo -e ""$verdeC"\n+ Connection succesful :)"$colorbase"\n"
+    exit 0
   else
     echo -e ""$rojo"- ERROR, no internet connection :( "$colorbase"\n"
     echo -e ""$amarillo" POSIBLE REASONS: "$colorbase""
     echo -e ""$amarillo"   - Your wifi password its wrong"$colorbase""
     echo -e ""$amarillo"   - You have to configure manual IP's"$colorbase"\n"
+    exit 1
 fi
 }
+
+function spinner() {
+    local time=$1
+    local cont=0
+    local delay=0.2
+    local spinstr='|/-\'
+    while [ "$cont" -le "$time" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+	let cont=$cont+1
+    done
+    printf "    \b\b\b\b"
+}
+
 
 ##################
 ## MAIN program ##
@@ -246,6 +313,8 @@ if [ "$(id -u)" != "0" ];
     exit 1
 fi
 
+#Check launch options
+check_flags $1
 #Function to check available interfaces
 check_ifaces
 #Function scan and save the results
