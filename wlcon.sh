@@ -13,9 +13,9 @@ resaltar="\E[7m"
 colorbase="\E[0m"
 
 function check_flags() {
-case $1 in
-	--help | -h)
-			echo -e "USE: $0 <args>"
+case _$1 in
+	_--help | _-h)
+			echo -e "\nUSAGE: $0 <args>"
 			echo -e "\n  ARGS:"
 			echo -e "\n    "$blanco"-h:"$colorbase"   \t This help"
 			echo -e "\n    "$blanco"-pp:"$colorbase"  \t Password in plain text in screen [ Default ]"
@@ -23,17 +23,23 @@ case $1 in
 			echo -e "\n    "$blanco"-pa:"$colorbase"  \t Password with asterisk\n"
 			exit 1
 			;;
-	-pp)
+	_-pp)
 			PASS_HIDDEN=NO
 			;;
-	-ph)
+	_-ph)
 			PASS_HIDDEN=YES
 			;;
-	-pa)
+	_-pa)
 			PASS_HIDDEN=ASTERISK
 			;;
+	_)
+			PASS_HIDDEN=NO
+			;;
+	*)
+			echo -e "\n Type $0 -h for help\n"; exit 1
+			;;
 esac
-	
+
 }
 
 function check_ifaces() {
@@ -226,7 +232,7 @@ NETWORK=$(cat /tmp/scan.txt | head -n $OPT | tail -n 1 | awk '{ $1=$2=""; print 
 NETWORK=$(echo "$NETWORK" | sed -e 's/^[ \t]*//')
 echo -e ""$blanco"The net selected is: "$verdeC"$NETWORK"$colorbase""
 echo -ne ""$blanco"Password: "$colorbase""
-echo -ne ""$rojo""
+echo -ne ""$rojoC""
 
 if [ "$PASS_HIDDEN" == "ASTERISK" ]
   then
@@ -245,7 +251,7 @@ if [ "$PASS_HIDDEN" == "ASTERISK" ]
    elif [ "$PASS_HIDDEN" == "YES" ]
      then
        read -s PASS
-   else		
+   else
      read PASS
 fi
 echo -e ""$colorbase""
@@ -266,7 +272,10 @@ killall NetworkManager > /dev/null 2>&1
 wpa_supplicant -B -i $IFACE_WLAN -c "/etc/wpa_supplicant/$NETWORK.conf" -D nl80211
 echo -e ""$blanco"+ Kill old dhclient proccess . . ."$colorbase""
 killall dhclient > /dev/null 2>&1
-sleep 2
+sleep 1
+echo -e ""$blanco"+ Set OpenDNS IP's in 'resolv.conf' . . ."$colorbase""
+echo -e "nameserver 208.67.222.222\nnameserver 208.67.220.220" > /etc/resolv.conf
+sleep 1
 timeout 15 dhclient $IFACE_WLAN > /dev/null 2>&1 &
 echo -ne ""$blanco"+ Get DHCP request  "$marron""
 spinner 25
