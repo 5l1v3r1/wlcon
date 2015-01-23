@@ -79,7 +79,7 @@ while [ "$INT" -lt "1" -o "$INT" -gt "$IFACES_NUM" ]
     read INT
     if [ -z $INT ] || [ "$INT" -lt "1" ] || [ "$INT" -gt "$IFACES_NUM" ]
       then
-        echo -e ""$rojo" - ERROR - CTRL+C to EXIT"$colorbase""
+        echo -e ""$rojoC" - ERROR - CTRL+C to EXIT"$colorbase""
         sleep .7
         check_ifaces
     fi
@@ -212,7 +212,7 @@ while [ -z $OPT ] || [ "$OPT" -lt "1" ] || [ "$OPT" -gt "$MAX_NUM" ]
     read OPT
     if [ -z $OPT ] || [ "$OPT" -lt "0" ] || [ "$OPT" -gt "$MAX_NUM" ]
       then
-        echo -e ""$rojo" - ERROR - CTRL+C to EXIT"$colorbase""
+        echo -e ""$rojoC" - ERROR - CTRL+C to EXIT"$colorbase""
         sleep .7
       elif [ "$OPT" -eq "0" ]
         then
