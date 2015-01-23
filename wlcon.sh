@@ -15,12 +15,12 @@ colorbase="\E[0m"
 function check_flags() {
 case _$1 in
 	_--help | _-h)
-			echo -e "\nUSAGE: $0 <args>"
-			echo -e "\n  ARGS:"
-			echo -e "\n    "$blanco"-h:"$colorbase"   \t This help"
-			echo -e "\n    "$blanco"-pp:"$colorbase"  \t Password in plain text in screen [ Default ]"
-			echo -e "\n    "$blanco"-ph:"$colorbase"  \t Password hidden (no echoed)"
-			echo -e "\n    "$blanco"-pa:"$colorbase"  \t Password with asterisk\n"
+			echo -e "\n"$amarillo"USAGE: "$verdeC"$0 "$azulC"<args>"$colorbase""
+			echo -e "\n  "$amarillo"ARGS:"$colorbase""
+			echo -e "\n    "$azulC"-h:"$colorbase"   \t This help"
+			echo -e "\n    "$azulC"-pp:"$colorbase"  \t Password in plain text in screen [ Default ]"
+			echo -e "\n    "$azulC"-ph:"$colorbase"  \t Password hidden (no echoed)"
+			echo -e "\n    "$azulC"-pa:"$colorbase"  \t Password with asterisk\n"
 			exit 1
 			;;
 	_-pp)
