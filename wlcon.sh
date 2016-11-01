@@ -91,7 +91,7 @@ ifconfig $IFACE_WLAN up > /dev/null 2>&1
 
 function draw() {
 local COB=$1
-COB=$(echo "$1" | cut -c 2-3 )
+COB=$(echo "$1" | cut -c 2-3 | sed 's/\.//g')
 if [ "$COB" -le "100" ] && [ "$COB" -gt "90" ]
   then
     SIGNAL=$(echo -ne ""$rojo"▝▀"$gris"▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀▝▀"$colorbase"")
